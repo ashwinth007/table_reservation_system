@@ -1,22 +1,23 @@
 import express from "express";
-import cors from "cors"; // ✅ import cors
+import cors from "cors";
+import path from "path";
 import router from "./routes/reservationRoute.js";
 import ErrorHandler from "./middlewares/error.js";
-
 const app = express();
-
-// Enable CORS for all origins
 app.use(cors({
-  origin: "http://localhost:5173", // allow only your frontend OR use "*" to allow all
-  methods: ["GET", "POST", "PUT", "DELETE"], // allowed HTTP methods
-  credentials: true, // if you need cookies/auth
+  origin: "*", 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 }));
 
 app.use(express.json());
-app.use("/api/v1/reservation",router);
+app.use("/api/v1/reservation", router);
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-app.get("/", (req, res) => res.send("API is running..."));
-
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
+});
 app.use(ErrorHandler);
 
 export default app;
